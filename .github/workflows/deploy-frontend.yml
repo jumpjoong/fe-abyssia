@@ -24,6 +24,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mining-fe:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mining-fe:cache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mining-fe:cache,mode=max
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_REOWN_ID=${{ secrets.NEXT_PUBLIC_REOWN_ID }}

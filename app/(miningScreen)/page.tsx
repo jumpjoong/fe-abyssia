@@ -10,7 +10,6 @@ import confetti from "canvas-confetti";
 import Gauge from "@/components/Gauge";
 import { useAppKit } from "@reown/appkit/react";
 import { useState } from "react";
-import { useAppKitState } from "@reown/appkit/react";
 
 const fmtResource = (g: number): string => {
   if (g == null || isNaN(g) || g < 0) return "0g";
@@ -99,7 +98,8 @@ type Resources = {
 
 export default function MiningScreen() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { isConnected, address } = useAppKitAccount();
+  const { isConnected, address, status } = useAppKitAccount();
+
   const {
     startTimes,
     setStartTimes,
@@ -121,7 +121,6 @@ export default function MiningScreen() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const setIsDataLoaded = useGameStore(state => state.setIsDataLoaded);
 
-  const { initialized } = useAppKitState();
   const { open } = useAppKit();
 
   useEffect(() => {
@@ -130,15 +129,14 @@ export default function MiningScreen() {
 
   // 로그인 처리 및 데이터 로드
   useEffect(() => {
-    if (!initialized) return;
+    if (status === "connecting" || status === undefined) return;
 
-    if (isConnected && address) {
+    if (status === "connected" && address) {
       if (startTimes && startTimes.some(t => t > 0)) {
         setIsLoading(false);
         setIsDataLoaded(true);
         return;
       }
-
       setIsLoading(true);
       fetch(`${API_URL}/api/game/login`, {
         method: "POST",
@@ -147,7 +145,6 @@ export default function MiningScreen() {
       })
         .then(res => res.json())
         .then(data => {
-          // 서버 시간과 클라이언트 시간 오차 보정
           const offset = data.serverNow - Date.now();
           setServerTimeOffset(offset);
           setStartTimes(data.startTimes);
@@ -159,21 +156,14 @@ export default function MiningScreen() {
           setIsLoading(false);
           setIsDataLoaded(true);
         });
-    } else {
+    } else if (status === "disconnected") {
       setStartTimes([]);
       setResources({ rees: 0, au: 0, co: 0, ni: 0, mn: 0, cu: 0 });
       setServerTimeOffset(0);
       setIsLoading(false);
       setIsDataLoaded(true);
     }
-  }, [
-    isConnected,
-    address,
-    setStartTimes,
-    setResources,
-    setServerTimeOffset,
-    initialized,
-  ]);
+  }, [status, address, setStartTimes, setResources, setServerTimeOffset]);
 
   // 브라우저 닫기/새로고침 시 sendBeacon
   useEffect(() => {
@@ -276,7 +266,6 @@ export default function MiningScreen() {
     return <div className="loading-screen">Syncing data...</div>;
   }
 
-  console.log("initialized:", initialized);
   return (
     <div className="mining-container" style={{ position: "relative" }}>
       <canvas
