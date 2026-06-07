@@ -32,7 +32,7 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.FRONT_EC2_HOST }}
-          username: ubuntu
+          username: ec2-user
           key: ${{ secrets.FRONT_EC2_KEY }}
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mining-fe:latest
