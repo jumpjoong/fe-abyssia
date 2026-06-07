@@ -1,20 +1,21 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
+import { useGameStore } from "@/store/useGameStore";
 
 const Gauge = memo(
   ({ startTime, duration }: { startTime: number; duration: number }) => {
-    const [now, setNow] = useState(Date.now());
+    const serverTimeOffset = useGameStore(state => state.serverTimeOffset);
+    const [now, setNow] = useState(() => Date.now() + serverTimeOffset);
 
     useEffect(() => {
-      // 🔥 로그아웃 등으로 startTime이 없어지면 now를 리셋하고 종료!
       if (!startTime) {
-        setNow(Date.now());
+        setNow(Date.now() + serverTimeOffset);
         return;
       }
 
       const update = () => {
-        const current = Date.now();
+        const current = Date.now() + serverTimeOffset;
         const passed = (current - startTime) / 1000;
         const prog = (passed / duration) * 100;
 
@@ -34,9 +35,8 @@ const Gauge = memo(
       }, 250);
 
       return () => clearInterval(timer);
-    }, [startTime, duration]); // startTime이 null이나 0이 되면 이 effect가 다시 실행됩니다.
+    }, [startTime, duration, serverTimeOffset]);
 
-    // 렌더링 시점에서 한 번 더 방어
     const passed = startTime ? Math.max(0, (now - startTime) / 1000) : 0;
     const prog = startTime ? Math.min((passed / duration) * 100, 100) : 0;
 

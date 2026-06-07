@@ -17,12 +17,15 @@ interface GameState {
   setResources: (resources: Resources) => void;
   isDataLoaded: boolean;
   setIsDataLoaded: (loaded: boolean) => void;
+  serverTimeOffset: number;
+  setServerTimeOffset: (offset: number) => void;
 }
 
 export const useGameStore = create<GameState>(set => ({
   startTimes: Array(6).fill(0),
   resources: { rees: 0, au: 0, co: 0, ni: 0, mn: 0, cu: 0 },
-  isDataLoaded: false, // 초기값은 false
+  isDataLoaded: false,
+  serverTimeOffset: 0,
 
   setStartTimes: times => set({ startTimes: times }),
 
@@ -36,4 +39,6 @@ export const useGameStore = create<GameState>(set => ({
   setResources: resources => set({ resources }),
 
   setIsDataLoaded: loaded => set({ isDataLoaded: loaded }),
+
+  setServerTimeOffset: offset => set({ serverTimeOffset: offset }),
 }));

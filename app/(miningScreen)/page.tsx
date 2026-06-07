@@ -97,10 +97,10 @@ export default function MiningScreen() {
     updateStartTime,
     resources,
     setResources,
+    setServerTimeOffset,
   } = useGameStore();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  //데이터로딩
   const [isLoading, setIsLoading] = useState(true);
   const [showClaimModal, setShowClaimModal] = useState({
     isOpen: false,
@@ -110,7 +110,6 @@ export default function MiningScreen() {
 
   const startTimesRef = useRef(startTimes);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  //인트로 로딩
   const setIsDataLoaded = useGameStore(state => state.setIsDataLoaded);
 
   const { open } = useAppKit();
@@ -122,7 +121,6 @@ export default function MiningScreen() {
   // 로그인 처리 및 데이터 로드
   useEffect(() => {
     if (isConnected && address) {
-      // store에 이미 startTimes가 있으면 login 재호출 안 함
       if (startTimes && startTimes.some(t => t > 0)) {
         setIsLoading(false);
         setIsDataLoaded(true);
@@ -137,10 +135,12 @@ export default function MiningScreen() {
       })
         .then(res => res.json())
         .then(data => {
+          // 서버 시간과 클라이언트 시간 오차 보정
+          const offset = data.serverNow - Date.now();
+          setServerTimeOffset(offset);
           setStartTimes(data.startTimes);
           setResources(data.resources);
           setIsLoading(false);
-          //인트로 이미지
           requestAnimationFrame(() => {
             setIsDataLoaded(true);
           });
@@ -152,10 +152,11 @@ export default function MiningScreen() {
     } else {
       setStartTimes([]);
       setResources({ rees: 0, au: 0, co: 0, ni: 0, mn: 0, cu: 0 });
+      setServerTimeOffset(0);
       setIsLoading(false);
       setIsDataLoaded(true);
     }
-  }, [isConnected, address, setStartTimes, setResources]);
+  }, [isConnected, address, setStartTimes, setResources, setServerTimeOffset]);
 
   // 브라우저 닫기/새로고침 시 sendBeacon
   useEffect(() => {
@@ -222,7 +223,8 @@ export default function MiningScreen() {
 
     const sTime = startTimes[idx];
     if (sTime) {
-      const passed = (Date.now() - sTime) / 1000;
+      const serverNow = Date.now() + useGameStore.getState().serverTimeOffset;
+      const passed = (serverNow - sTime) / 1000;
       const prog = (passed / TREASURE_DATA[idx].duration) * 100;
       if (prog < 100) return alert("Mining...");
     }
@@ -243,7 +245,7 @@ export default function MiningScreen() {
         amount: data.reward.amount,
       });
       triggerJackpotEffect();
-      setResources(data.resources); // ← store에 저장
+      setResources(data.resources);
       updateStartTime(idx, data.nextStartTime);
     } catch {
       alert("Failed to connect to server");
