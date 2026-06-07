@@ -128,6 +128,8 @@ export default function MiningScreen() {
 
   // 로그인 처리 및 데이터 로드
   useEffect(() => {
+    if (isConnected === undefined) return;
+
     if (isConnected && address) {
       if (startTimes && startTimes.some(t => t > 0)) {
         setIsLoading(false);
