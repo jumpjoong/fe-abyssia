@@ -128,6 +128,46 @@
   margin: 0;
 }
 
+.abs-balance-card {
+  margin: 0 14px 12px;
+  background: #111827;
+  border: 0.5px solid #1e3a5f;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.abs-balance-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.abs-balance-icon {
+  display: flex;
+}
+
+.abs-balance-label {
+  font-size: 11px;
+  color: #4a6a8a;
+  margin: 0;
+}
+
+.abs-balance-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e8f0ff;
+  margin: 0;
+}
+
+.abs-balance-symbol {
+  font-size: 13px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
 .shop-body {
   padding: 0 14px 24px;
 }

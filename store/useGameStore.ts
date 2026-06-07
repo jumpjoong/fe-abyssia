@@ -19,6 +19,8 @@ interface GameState {
   setIsDataLoaded: (loaded: boolean) => void;
   serverTimeOffset: number;
   setServerTimeOffset: (offset: number) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
 }
 
 export const useGameStore = create<GameState>(set => ({
@@ -26,6 +28,7 @@ export const useGameStore = create<GameState>(set => ({
   resources: { rees: 0, au: 0, co: 0, ni: 0, mn: 0, cu: 0 },
   isDataLoaded: false,
   serverTimeOffset: 0,
+  isLoading: true,
 
   setStartTimes: times => set({ startTimes: times }),
 
@@ -41,4 +44,6 @@ export const useGameStore = create<GameState>(set => ({
   setIsDataLoaded: loaded => set({ isDataLoaded: loaded }),
 
   setServerTimeOffset: offset => set({ serverTimeOffset: offset }),
+
+  setIsLoading: loaded => set({ isLoading: loaded }),
 }));

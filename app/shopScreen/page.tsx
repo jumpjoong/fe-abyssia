@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useGameStore } from "@/store/useGameStore";
+import { useBalance } from "wagmi";
 import "../../styles/ShopScreen.css";
 
 const RESOURCE_CONFIG = [
@@ -21,10 +22,17 @@ const fmt = (n: number) => n.toLocaleString();
 type ResourceKey = "rees" | "au" | "co" | "ni" | "mn" | "cu";
 type Resources = Record<ResourceKey, number>;
 
+const ABS_TOKEN_ADDRESS = "0xd33116b843C6Df745d923BF3C7351c2BC8CF1dB9" as const;
+
 export default function ShopScreen() {
   const { isConnected, address } = useAppKitAccount();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const { resources } = useGameStore();
+
+  const { data: absBalance } = useBalance({
+    address: address as `0x${string}`,
+    token: ABS_TOKEN_ADDRESS,
+  });
 
   const [selected, setSelected] = useState<Record<ResourceKey, boolean>>({
     rees: false,
@@ -90,7 +98,9 @@ export default function ShopScreen() {
 
   const handleExchange = async () => {
     if (!isConnected || totalTokens === 0) return;
+
     setIsLoading(true);
+
     try {
       const payload = RESOURCE_CONFIG.filter(
         cfg => selected[cfg.key] && amounts[cfg.key] > 0,
@@ -144,6 +154,28 @@ export default function ShopScreen() {
       <div className="shop-header">
         <h2>Resource Exchange</h2>
         <p>Select resources to exchange for ABYSSIA tokens</p>
+      </div>
+
+      <div className="abs-balance-card">
+        <div className="abs-balance-left">
+          <div className="abs-balance-icon">
+            <img src="/abs-logo.svg" alt="ABS" width="100%" height="100%" />
+          </div>
+          <div>
+            <p className="abs-balance-label">My ABS Balance</p>
+            <p className="abs-balance-value">
+              {absBalance
+                ? (
+                    Math.floor(Number(absBalance.formatted) * 10000) / 10000
+                  ).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 4,
+                  })
+                : "0.00"}
+              <span className="abs-balance-symbol">ABS</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="shop-body">

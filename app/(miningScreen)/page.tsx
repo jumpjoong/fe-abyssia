@@ -10,6 +10,7 @@ import confetti from "canvas-confetti";
 import Gauge from "@/components/Gauge";
 import { useAppKit } from "@reown/appkit/react";
 import { useState } from "react";
+import { useAppKitState } from "@reown/appkit/react";
 
 const fmtResource = (g: number): string => {
   if (g == null || isNaN(g) || g < 0) return "0g";
@@ -97,6 +98,7 @@ type Resources = {
 };
 
 export default function MiningScreen() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const { isConnected, address } = useAppKitAccount();
   const {
     startTimes,
@@ -108,8 +110,7 @@ export default function MiningScreen() {
     serverTimeOffset,
   } = useGameStore();
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, setIsLoading } = useGameStore();
   const [showClaimModal, setShowClaimModal] = useState({
     isOpen: false,
     name: "",
@@ -120,6 +121,7 @@ export default function MiningScreen() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const setIsDataLoaded = useGameStore(state => state.setIsDataLoaded);
 
+  const { initialized } = useAppKitState();
   const { open } = useAppKit();
 
   useEffect(() => {
@@ -128,7 +130,7 @@ export default function MiningScreen() {
 
   // 로그인 처리 및 데이터 로드
   useEffect(() => {
-    if (isConnected === undefined) return;
+    if (!initialized) return;
 
     if (isConnected && address) {
       if (startTimes && startTimes.some(t => t > 0)) {
@@ -151,9 +153,7 @@ export default function MiningScreen() {
           setStartTimes(data.startTimes);
           setResources(data.resources);
           setIsLoading(false);
-          requestAnimationFrame(() => {
-            setIsDataLoaded(true);
-          });
+          setIsDataLoaded(true);
         })
         .catch(() => {
           setIsLoading(false);
@@ -166,7 +166,14 @@ export default function MiningScreen() {
       setIsLoading(false);
       setIsDataLoaded(true);
     }
-  }, [isConnected, address, setStartTimes, setResources, setServerTimeOffset]);
+  }, [
+    isConnected,
+    address,
+    setStartTimes,
+    setResources,
+    setServerTimeOffset,
+    initialized,
+  ]);
 
   // 브라우저 닫기/새로고침 시 sendBeacon
   useEffect(() => {
