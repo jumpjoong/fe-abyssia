@@ -14,7 +14,7 @@ const RESOURCE_CONFIG = [
   { key: "cu", label: "Copper (Cu)", icon: "/cu.png", ratio: 15, step: 15 },
 ] as const;
 
-const MIN_EXCHANGE_TOKENS = 10;
+const MIN_EXCHANGE_TOKENS = 10000;
 
 const fmt = (n: number) => n.toLocaleString();
 

@@ -11,6 +11,13 @@ import Gauge from "@/components/Gauge";
 import { useAppKit } from "@reown/appkit/react";
 import { useState } from "react";
 
+const fmtResource = (g: number): string => {
+  if (g == null || isNaN(g) || g < 0) return "0g";
+  if (g >= 1_000_000) return Math.floor(g / 10_000) / 100 + "t";
+  if (g >= 1_000) return Math.floor(g / 10) / 100 + "kg";
+  return Math.floor(g) + "g";
+};
+
 const TREASURE_DATA = [
   {
     id: 1,
@@ -98,6 +105,7 @@ export default function MiningScreen() {
     resources,
     setResources,
     setServerTimeOffset,
+    serverTimeOffset,
   } = useGameStore();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -223,7 +231,7 @@ export default function MiningScreen() {
 
     const sTime = startTimes[idx];
     if (sTime) {
-      const serverNow = Date.now() + useGameStore.getState().serverTimeOffset;
+      const serverNow = Date.now() + serverTimeOffset;
       const passed = (serverNow - sTime) / 1000;
       const prog = (passed / TREASURE_DATA[idx].duration) * 100;
       if (prog < 100) return alert("Mining...");
@@ -285,7 +293,7 @@ export default function MiningScreen() {
               />
               <span className="resource-label">{label}:</span>
               <span className="resource-value">
-                {resources[key as keyof Resources]}g
+                {fmtResource(resources[key as keyof Resources])}
               </span>
             </span>
           ))}
