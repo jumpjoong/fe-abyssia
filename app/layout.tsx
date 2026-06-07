@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "Mine rare deep-sea resources and exchange them for ABYSSIA tokens on BNB Chain.",
     images: [
       {
-        url: "https://app.abyssia.net/",
+        url: "https://app.abyssia.net/og-img.png",
         width: 1280,
         height: 640,
         alt: "ABYSSIA — From Ocean Depths to Digital Value",
