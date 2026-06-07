@@ -14,10 +14,11 @@ const RESOURCE_CONFIG = [
   { key: "cu", label: "Copper (Cu)", icon: "/cu.png", ratio: 15, step: 15 },
 ] as const;
 
-const MIN_EXCHANGE_TOKENS = 1000;
+const MIN_EXCHANGE_TOKENS = 10;
+
+const fmt = (n: number) => n.toLocaleString();
 
 type ResourceKey = "rees" | "au" | "co" | "ni" | "mn" | "cu";
-
 type Resources = Record<ResourceKey, number>;
 
 export default function ShopScreen() {
@@ -25,7 +26,6 @@ export default function ShopScreen() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const { resources } = useGameStore();
 
-  // 선택 여부
   const [selected, setSelected] = useState<Record<ResourceKey, boolean>>({
     rees: false,
     au: false,
@@ -35,7 +35,6 @@ export default function ShopScreen() {
     cu: false,
   });
 
-  // 교환할 수량
   const [amounts, setAmounts] = useState<Resources>({
     rees: 0,
     au: 0,
@@ -51,19 +50,12 @@ export default function ShopScreen() {
     visible: boolean;
     hiding: boolean;
     amount: number;
-  }>({
-    visible: false,
-    hiding: false,
-    amount: 0,
-  });
+  }>({ visible: false, hiding: false, amount: 0 });
 
-  // 카드 탭 → 선택/해제
   const toggleCard = (key: ResourceKey) => {
     setSelected(prev => {
       const next = { ...prev, [key]: !prev[key] };
-      if (!next[key]) {
-        setAmounts(a => ({ ...a, [key]: 0 }));
-      }
+      if (!next[key]) setAmounts(a => ({ ...a, [key]: 0 }));
       return next;
     });
   };
@@ -72,24 +64,23 @@ export default function ShopScreen() {
     setToast({ visible: true, hiding: false, amount });
     setTimeout(() => {
       setToast(prev => ({ ...prev, hiding: true }));
-      setTimeout(() => {
-        setToast({ visible: false, hiding: false, amount: 0 });
-      }, 400);
+      setTimeout(
+        () => setToast({ visible: false, hiding: false, amount: 0 }),
+        400,
+      );
     }, 2000);
   };
-  // 슬라이더 변경
+
   const handleSlider = (key: ResourceKey, val: number) => {
     setAmounts(prev => ({ ...prev, [key]: val }));
   };
 
-  // MAX 버튼
   const handleMax = (key: ResourceKey) => {
     const cfg = RESOURCE_CONFIG.find(r => r.key === key)!;
     const max = Math.floor(resources[key] / cfg.ratio) * cfg.ratio;
     setAmounts(prev => ({ ...prev, [key]: max }));
   };
 
-  // 총 예상 토큰
   const totalTokens = RESOURCE_CONFIG.reduce((sum, cfg) => {
     if (!selected[cfg.key]) return sum;
     return sum + Math.floor(amounts[cfg.key] / cfg.ratio);
@@ -97,7 +88,6 @@ export default function ShopScreen() {
 
   const selectedCount = Object.values(selected).filter(Boolean).length;
 
-  // 교환 요청
   const handleExchange = async () => {
     if (!isConnected || totalTokens === 0) return;
     setIsLoading(true);
@@ -115,8 +105,8 @@ export default function ShopScreen() {
       const data = await res.json();
 
       if (res.ok) {
-        showToast(totalTokens); // ← 추가
-        setResult(`${totalTokens} ABYSSIA exchanged successfully!`);
+        showToast(totalTokens);
+        setResult(`${fmt(totalTokens)} ABYSSIA exchanged successfully!`);
         setSelected({
           rees: false,
           au: false,
@@ -146,10 +136,11 @@ export default function ShopScreen() {
               <path d="M14 27 L22 35 L38 19" />
             </svg>
             <div className="toast-title">Exchange Complete!</div>
-            <div className="toast-amount">+{toast.amount} ABYSSIA</div>
+            <div className="toast-amount">+{fmt(toast.amount)} ABYSSIA</div>
           </div>
         </div>
       )}
+
       <div className="shop-header">
         <h2>Resource Exchange</h2>
         <p>Select resources to exchange for ABYSSIA tokens</p>
@@ -190,7 +181,7 @@ export default function ShopScreen() {
                   </div>
                 </div>
 
-                <div className="rc-hold">Available: {maxAmt}</div>
+                <div className="rc-hold">Available: {fmt(maxAmt)}</div>
 
                 <div className="rc-bar-bg">
                   <div
@@ -204,7 +195,7 @@ export default function ShopScreen() {
 
                 <div className="rc-bottom">
                   <span className="rc-token">
-                    {tokens} Token{tokens !== 1 ? "s" : ""}
+                    {fmt(tokens)} Token{tokens !== 1 ? "s" : ""}
                   </span>
                   <span className="rc-ratio">{cfg.ratio} = 1 ABYSSIA</span>
                 </div>
@@ -219,14 +210,14 @@ export default function ShopScreen() {
                         type="range"
                         min={0}
                         max={maxAmt}
-                        step={cfg.step} // ← 추가
+                        step={cfg.step}
                         value={amounts[key]}
                         onChange={e =>
                           handleSlider(key, Number(e.target.value))
                         }
                         className="rc-slider"
                       />
-                      <span className="rc-val">{amounts[key]}</span>
+                      <span className="rc-val">{fmt(amounts[key])}</span>
                     </div>
                     <button
                       className="rc-max-btn"
@@ -253,16 +244,17 @@ export default function ShopScreen() {
           </div>
           <div className="summary-row bold">
             <span>Total Estimated Tokens</span>
-            <span>{totalTokens} ABYSSIA</span>
+            <span>{fmt(totalTokens)} ABYSSIA</span>
           </div>
         </div>
-        {/* 교환 버튼 */}
+
         {totalTokens > 0 && totalTokens < MIN_EXCHANGE_TOKENS && (
           <div className="min-token-notice">
-            ⚠️ Minimum {MIN_EXCHANGE_TOKENS} ABYSSIA required to exchange.
-            Currently {totalTokens} ABYSSIA selected.
+            ⚠️ Minimum {fmt(MIN_EXCHANGE_TOKENS)} ABYSSIA required to exchange.
+            Currently {fmt(totalTokens)} ABYSSIA selected.
           </div>
         )}
+
         <button
           className="exchange-btn"
           disabled={totalTokens < MIN_EXCHANGE_TOKENS || isLoading}
@@ -271,8 +263,8 @@ export default function ShopScreen() {
           {isLoading
             ? "Processing..."
             : totalTokens >= MIN_EXCHANGE_TOKENS
-              ? `Exchange ${totalTokens} ABYSSIA`
-              : `Minimum ${MIN_EXCHANGE_TOKENS} ABYSSIA required`}
+              ? `Exchange ${fmt(totalTokens)} ABYSSIA`
+              : `Minimum ${fmt(MIN_EXCHANGE_TOKENS)} ABYSSIA required`}
         </button>
 
         {result && <div className="exchange-result">{result}</div>}
