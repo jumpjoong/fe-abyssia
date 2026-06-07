@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppKitProvider } from "./context";
 
 //나중에 ec2 배포 시 변경
-const BASE_URL = "https://mining-game-omega.vercel.app/";
+const BASE_URL = "https://app.abyssia.net/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "Mine rare deep-sea resources and exchange them for ABYSSIA tokens on BNB Chain.",
     images: [
       {
-        url: "https://mining-game-omega.vercel.app/og-img.png",
+        url: "https://app.abyssia.net/",
         width: 1280,
         height: 640,
         alt: "ABYSSIA — From Ocean Depths to Digital Value",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     title: "ABYSSIA — From Ocean Depths to Digital Value",
     description:
       "Mine rare deep-sea resources and exchange them for ABYSSIA tokens on BNB Chain.",
-    images: ["https://mining-game-omega.vercel.app/og-img.png"],
+    images: ["https://app.abyssia.net/og-img.png"],
   },
 
   robots: {
