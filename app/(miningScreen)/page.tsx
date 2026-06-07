@@ -276,6 +276,7 @@ export default function MiningScreen() {
     return <div className="loading-screen">Syncing data...</div>;
   }
 
+  console.log("initialized:", initialized);
   return (
     <div className="mining-container" style={{ position: "relative" }}>
       <canvas
