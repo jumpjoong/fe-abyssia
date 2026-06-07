@@ -14,7 +14,7 @@ const RESOURCE_CONFIG = [
   { key: "cu", label: "Copper (Cu)", icon: "/cu.png", ratio: 15, step: 15 },
 ] as const;
 
-const MIN_EXCHANGE_TOKENS = 10;
+const MIN_EXCHANGE_TOKENS = 1000;
 
 type ResourceKey = "rees" | "au" | "co" | "ni" | "mn" | "cu";
 
