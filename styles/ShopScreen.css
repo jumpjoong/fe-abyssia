@@ -1,6 +1,8 @@
 .shop-container {
   width: 100%;
   height: 100%;
+  /* 탭바가 해당 컴포넌트 위에 깔려서 드래그가 안 먹음 탭바 높이만큼 내부 영역 */
+  padding-bottom: 65px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
