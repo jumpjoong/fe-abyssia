@@ -222,7 +222,7 @@ export default function ShopScreen() {
                   </div>
                 </div>
 
-                <div className="rc-hold">Available: {fmt(maxAmt)}</div>
+                <div className="rc-hold">Available: {fmt(maxAmt)}g</div>
 
                 <div className="rc-bar-bg">
                   <div
