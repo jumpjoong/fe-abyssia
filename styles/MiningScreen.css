@@ -235,13 +235,15 @@ canvas {
 /* ────────────────────────────────
    모바일 반응형
 ──────────────────────────────── */
+@media (max-width: 390px) {
+  .resource-label,
+  .resource-value {
+    font-size: 10px;
+  }
+}
 
 @media (max-width: 360px) {
   .wallet-btn {
-    font-size: 10px;
-  }
-  .resource-label,
-  .resource-value {
     font-size: 10px;
   }
   .resource-icon {
