@@ -75,6 +75,7 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
+        <link rel="preload" as="image" href="/abs-logo.svg" />
       </head>
       <body className="min-h-full flex flex-col">
         <AppKitProvider>{children}</AppKitProvider>

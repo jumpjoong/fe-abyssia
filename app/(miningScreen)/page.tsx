@@ -10,6 +10,7 @@ import confetti from "canvas-confetti";
 import Gauge from "@/components/Gauge";
 import { useAppKit } from "@reown/appkit/react";
 import { useState } from "react";
+import { useBalance } from "wagmi";
 
 const fmtResource = (g: number): string => {
   if (g == null || isNaN(g) || g < 0) return "0g";
@@ -23,7 +24,7 @@ const TREASURE_DATA = [
     id: 1,
     name: "Cu",
     top: "38.5%",
-    left: "21.5%",
+    left: "22.5%",
     duration: 60,
     icon: "/cu.png",
   },
@@ -39,7 +40,7 @@ const TREASURE_DATA = [
     id: 3,
     name: "Co",
     top: "38.5%",
-    left: "79.5%",
+    left: "80%",
     duration: 900,
     icon: "/co.png",
   },
@@ -47,7 +48,7 @@ const TREASURE_DATA = [
     id: 4,
     name: "Mn",
     top: "67%",
-    left: "22%",
+    left: "22.5%",
     duration: 1800,
     icon: "/mn.png",
   },
@@ -63,7 +64,7 @@ const TREASURE_DATA = [
     id: 6,
     name: "REEs",
     top: "67%",
-    left: "79.5%",
+    left: "80%",
     duration: 10800,
     icon: "/rees.png",
   },
@@ -98,7 +99,15 @@ type Resources = {
 
 export default function MiningScreen() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const { open } = useAppKit();
   const { isConnected, address, status } = useAppKitAccount();
+  //상점 컴포넌트에서 작성할 시 데이터를 바로 안 가져와서 맨 처음 컴포넌트에서 적용
+  useBalance({
+    address: address as `0x${string}`,
+    token: "0xd33116b843C6Df745d923BF3C7351c2BC8CF1dB9",
+    chainId: 56,
+  });
 
   const {
     startTimes,
@@ -109,19 +118,16 @@ export default function MiningScreen() {
     setServerTimeOffset,
     serverTimeOffset,
   } = useGameStore();
-
   const { isLoading, setIsLoading } = useGameStore();
+
   const [showClaimModal, setShowClaimModal] = useState({
     isOpen: false,
     name: "",
     amount: 0,
   });
-
   const startTimesRef = useRef(startTimes);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const setIsDataLoaded = useGameStore(state => state.setIsDataLoaded);
-
-  const { open } = useAppKit();
 
   useEffect(() => {
     startTimesRef.current = startTimes;
@@ -302,7 +308,7 @@ export default function MiningScreen() {
         </button>
       </div>
 
-      <img src="/deep-sea-final.png" className="bg-image" alt="background" />
+      <img src="/abyssia-final-bg.png" className="bg-image" alt="background" />
       <Lottie
         animationData={bubbleAnimation}
         loop={true}

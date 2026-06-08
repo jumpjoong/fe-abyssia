@@ -15,25 +15,29 @@ const RESOURCE_CONFIG = [
   { key: "cu", label: "Copper (Cu)", icon: "/cu.png", ratio: 15, step: 15 },
 ] as const;
 
-const MIN_EXCHANGE_TOKENS = 10000;
+const MIN_EXCHANGE_TOKENS = 10;
 
 const fmt = (n: number) => n.toLocaleString();
 
 type ResourceKey = "rees" | "au" | "co" | "ni" | "mn" | "cu";
 type Resources = Record<ResourceKey, number>;
 
+//어차피 abs 컨트랙트는 공유되서 환경변수로 설정x
 const ABS_TOKEN_ADDRESS = "0xd33116b843C6Df745d923BF3C7351c2BC8CF1dB9" as const;
 
 export default function ShopScreen() {
-  const { isConnected, address } = useAppKitAccount();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const { isConnected, address } = useAppKitAccount();
   const { resources } = useGameStore();
 
-  const { data: absBalance } = useBalance({
+  //abs 토큰 정보
+  const { data: absBalance, refetch } = useBalance({
     address: address as `0x${string}`,
     token: ABS_TOKEN_ADDRESS,
   });
 
+  //각 자원 선택 여부
   const [selected, setSelected] = useState<Record<ResourceKey, boolean>>({
     rees: false,
     au: false,
@@ -43,6 +47,7 @@ export default function ShopScreen() {
     cu: false,
   });
 
+  //슬라이더
   const [amounts, setAmounts] = useState<Resources>({
     rees: 0,
     au: 0,
@@ -115,8 +120,11 @@ export default function ShopScreen() {
       const data = await res.json();
 
       if (res.ok) {
+        //토큰 교환 후 잔액 반영
+        refetch();
         showToast(totalTokens);
         setResult(`${fmt(totalTokens)} ABYSSIA exchanged successfully!`);
+        //토큰 선택 전부 해제
         setSelected({
           rees: false,
           au: false,
@@ -125,6 +133,7 @@ export default function ShopScreen() {
           mn: false,
           cu: false,
         });
+        //슬라이더 0으로 설정
         setAmounts({ au: 0, rees: 0, co: 0, ni: 0, mn: 0, cu: 0 });
       } else {
         setResult(data.message || "Exchange failed");
