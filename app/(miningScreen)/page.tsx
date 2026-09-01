@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import "../../styles/MiningScreen.css";
 import Lottie from "lottie-react";
 import bubbleAnimation from "../../public/bubbles.json";
@@ -128,10 +129,19 @@ export default function MiningScreen() {
   const startTimesRef = useRef(startTimes);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const setIsDataLoaded = useGameStore(state => state.setIsDataLoaded);
+  const fingerprintIdRef = useRef<Promise<string | undefined> | null>(null);
 
   useEffect(() => {
     startTimesRef.current = startTimes;
   }, [startTimes]);
+
+  // 중복 가입 판별용 브라우저 fingerprint 선로딩 (실패해도 로그인은 막지 않음)
+  useEffect(() => {
+    fingerprintIdRef.current = FingerprintJS.load()
+      .then(fp => fp.get())
+      .then(result => result.visitorId)
+      .catch(() => undefined);
+  }, []);
 
   // 로그인 처리 및 데이터 로드
   useEffect(() => {
@@ -149,11 +159,21 @@ export default function MiningScreen() {
         return;
       }
       setIsLoading(true);
-      fetch(`${API_URL}/api/game/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wallet: address }),
-      })
+      const referralCode = new URLSearchParams(window.location.search).get(
+        "ref",
+      );
+      Promise.resolve(fingerprintIdRef.current)
+        .then(fingerprintId =>
+          fetch(`${API_URL}/api/game/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              wallet: address,
+              fingerprintId,
+              referralCode,
+            }),
+          }),
+        )
         .then(res => res.json())
         .then(data => {
           const offset = data.serverNow - Date.now();
