@@ -29,7 +29,7 @@ export default function ShopScreen() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const { isConnected, address } = useAppKitAccount();
-  const { resources } = useGameStore();
+  const { resources, setResources } = useGameStore();
 
   //abs 토큰 정보
   const { data: absBalance, refetch } = useBalance({
@@ -135,6 +135,7 @@ export default function ShopScreen() {
         });
         //슬라이더 0으로 설정
         setAmounts({ au: 0, rees: 0, co: 0, ni: 0, mn: 0, cu: 0 });
+        setResources(data.resources);
       } else {
         setResult(data.message || "Exchange failed");
       }
