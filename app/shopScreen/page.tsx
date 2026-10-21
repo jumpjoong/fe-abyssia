@@ -7,12 +7,12 @@ import { useBalance } from "wagmi";
 import "../../styles/ShopScreen.css";
 
 const RESOURCE_CONFIG = [
-  { key: "rees", label: "REEs", icon: "/rees.png", ratio: 9, step: 9 },
-  { key: "au", label: "Gold (Au)", icon: "/au.png", ratio: 15, step: 15 },
-  { key: "co", label: "Cobalt (Co)", icon: "/co.png", ratio: 45, step: 45 },
-  { key: "ni", label: "Nickel (Ni)", icon: "/ni.png", ratio: 45, step: 45 },
-  { key: "mn", label: "Manganese (Mn)", icon: "/mn.png", ratio: 45, step: 45 },
-  { key: "cu", label: "Copper (Cu)", icon: "/cu.png", ratio: 45, step: 45 },
+  { key: "rees", label: "REEs", icon: "/rees.png", ratio: 3, step: 3 },
+  { key: "au", label: "Gold (Au)", icon: "/au.png", ratio: 5, step: 5 },
+  { key: "co", label: "Cobalt (Co)", icon: "/co.png", ratio: 15, step: 15 },
+  { key: "ni", label: "Nickel (Ni)", icon: "/ni.png", ratio: 15, step: 15 },
+  { key: "mn", label: "Manganese (Mn)", icon: "/mn.png", ratio: 15, step: 15 },
+  { key: "cu", label: "Copper (Cu)", icon: "/cu.png", ratio: 15, step: 15 },
 ] as const;
 
 const MIN_EXCHANGE_TOKENS = 10000;
