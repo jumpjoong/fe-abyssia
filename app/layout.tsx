@@ -76,6 +76,10 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <meta name="coinzilla" content="ff42a516de849e1fbc35342545fcec4e" />
+        <meta
+          name="bitmedia-site-verification"
+          content="fa07aba2df4bf19ce52eff1d320751cb"
+        />
         <link rel="preload" as="image" href="/abs-logo.svg" />
       </head>
       <body className="min-h-full flex flex-col">
